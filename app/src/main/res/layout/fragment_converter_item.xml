@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="android.view.View" />
+        <import type="com.example.currencyconversation.utils.ResourceUtils"/>
+        <variable name="vm" type="com.example.currencyconversation.views.CurrencyConverterAdapter.ViewHolder" />
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp">
+
+        <ImageView
+            android:id="@+id/icCurrencyFlag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/currency_name"
+            android:layout_alignTop="@id/currency_symbol"
+            android:layout_marginEnd="10dp"
+            android:contentDescription="@{vm.mItem.codeName.toUpperCase()}"
+            app:countryFlag="@{ResourceUtils.getCurrencyFlagResId(context, vm.mItem.codeName.toLowerCase())}" />
+
+        <TextView
+            android:id="@+id/currency_symbol"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/icCurrencyFlag"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:text="@{vm.mItem.codeName.toUpperCase()}"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"/>
+
+        <TextView
+            android:id="@+id/currency_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/currency_symbol"
+            android:layout_toEndOf="@id/icCurrencyFlag"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:text="@{ResourceUtils.getCurrencyNameResId(context, vm.mItem.codeName.toLowerCase())}"
+            android:textColor="#919294"
+            android:textSize="14sp"/>
+
+        <EditText
+            android:id="@+id/currency_amount"
+            android:text="@{vm.mItem.currencyValue}"
+            android:inputType="numberDecimal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"/>
+
+    </RelativeLayout>
+</layout>

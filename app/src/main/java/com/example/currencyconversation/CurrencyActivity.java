@@ -16,7 +16,7 @@ import com.example.currencyconversation.views.AlertsFragment;
 import com.example.currencyconversation.views.ConverterFragment;
 import com.example.currencyconversation.views.RatesFragment;
 
-public class CurrencyActivity extends AppCompatActivity implements ConverterFragment.OnListFragmentInteractionListener {
+public class CurrencyActivity extends AppCompatActivity {
 
     private static final String FRAGMENT_CONVERTER = "fragment_currency_converter";
     private static final String FRAGMENT_ALL_RATES = "fragment_all_rates";
@@ -73,15 +73,5 @@ public class CurrencyActivity extends AppCompatActivity implements ConverterFrag
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(resourceId, fragment, tag).addToBackStack(tag);
         fragmentTransaction.commit();
-    }
-
-    @Override
-    public void onListFragmentInteraction(Currency item, int pos) {
-        Log.d("kartik", "onListFragmentInteraction: item: " + item.getCodeName());
-
-        if (pos != 0) {
-            converterFragment.getAdapter().notifyItemMoved(pos, 0);
-            converterFragment.getAdapter().updateItemPosition(pos, 0);
-        }
     }
 }
