@@ -11,7 +11,6 @@ import com.example.currencyconnector.models.Currency;
 import com.example.currencyconversation.models.CurrencyRate;
 import com.example.currencyconversation.utils.LogSubscriberImpl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -21,6 +20,7 @@ import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.BehaviorSubject;
 import okhttp3.OkHttpClient;
 
 public class VmConverter {
@@ -35,6 +35,8 @@ public class VmConverter {
 
     private final ObservableBoolean isCurrencyDataAvailable;
     private final ObservableList<CurrencyRate> currencyObservableList;
+
+    private final BehaviorSubject<Boolean> startRefreshingCurrencyValue = BehaviorSubject.createDefault(true);
     private final Scheduler scheduler;
     private final CompositeDisposable compositeDisposable;
 
@@ -54,6 +56,10 @@ public class VmConverter {
 
     public ObservableBoolean IsCurrencyDataAvailable() {
         return isCurrencyDataAvailable;
+    }
+
+    public void canStartRefreshingCurrencyValue(Boolean canStart) {
+        startRefreshingCurrencyValue.onNext(canStart);
     }
 
     public String getBaseCurrencyCode() {
@@ -101,5 +107,9 @@ public class VmConverter {
                         error -> Log.e(TAG, LOG_PREFIX + "refreshCurrencyValueEverySecond: ", error),
                         () -> Log.d(TAG, LOG_PREFIX + "refreshCurrencyValueEverySecond Completed")
                 ));
+    }
+
+    public void cleanUp() {
+        compositeDisposable.clear();
     }
 }

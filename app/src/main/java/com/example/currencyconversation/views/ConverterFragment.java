@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.currencyconnector.models.Currency;
 import com.example.currencyconversation.R;
 import com.example.currencyconversation.databinding.FragmentConverterBinding;
 import com.example.currencyconversation.models.CurrencyRate;
@@ -28,7 +27,7 @@ public class ConverterFragment extends Fragment {
     private IConverterListInteractionListener converterListInteractionListener;
     private RecyclerView recyclerView;
     private CurrencyConverterAdapter adapter;
-    private VmConverter currencyConverter;
+    private VmConverter vmConverter;
 
     public ConverterFragment() {
     }
@@ -40,7 +39,7 @@ public class ConverterFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        currencyConverter = VmLocator.getInstance().getVmConverter();
+        vmConverter = VmLocator.getInstance().getVmConverter();
         converterListInteractionListener = getConverterListInteractionListener();
     }
 
@@ -50,12 +49,12 @@ public class ConverterFragment extends Fragment {
 
         FragmentConverterBinding converterBinding = DataBindingUtil.inflate(inflater,
                 R.layout.fragment_converter, container, false);
-        converterBinding.setVm(currencyConverter);
+        converterBinding.setVm(vmConverter);
 
         recyclerView = converterBinding.list;
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new CurrencyConverterAdapter(converterListInteractionListener);
+        adapter = new CurrencyConverterAdapter(converterListInteractionListener, vmConverter.getLatestCurrencyList());
         recyclerView.setAdapter(adapter);
         setUpObservableListChangeListener();
         return converterBinding.getRoot();
@@ -64,11 +63,11 @@ public class ConverterFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        currencyConverter.fetchAndRefreshCurrencyValueEverySecond();
+        vmConverter.fetchAndRefreshCurrencyValueEverySecond();
     }
 
     private void setUpObservableListChangeListener() {
-        currencyConverter.getLatestCurrencyList()
+        vmConverter.getLatestCurrencyList()
                 .addOnListChangedCallback(new ObservableList.OnListChangedCallback<ObservableList<CurrencyRate>>() {
                     @Override
                     public void onChanged(ObservableList<CurrencyRate> sender) {
@@ -115,12 +114,21 @@ public class ConverterFragment extends Fragment {
         return new IConverterListInteractionListener() {
             @Override
             public void onListItemClickListener(CurrencyRate item, int pos) {
-                Log.d(TAG, LOG_PREFIX + " item: " + item.codeName + " pos: " + pos);
+                Log.d(TAG, LOG_PREFIX + "onListItemClickListener: item: " + item.codeName + " pos: " + pos);
                 if (pos != 0) {
-                    adapter.notifyItemRemoved(pos);
                     adapter.updateItemPosition(pos, 0);
-                    adapter.notifyItemInserted(0);
+                    adapter.notifyItemMoved(pos, 0);
                     recyclerView.scrollToPosition(0);
+                }
+            }
+
+            @Override
+            public void onListItemFocusChangeListener(CurrencyRate item, int pos, boolean hasFocus) {
+                Log.d(TAG, LOG_PREFIX + "onListItemFocusChangeListener: item: " + item.codeName + " pos: " + pos);
+                vmConverter.canStartRefreshingCurrencyValue(!hasFocus);
+                if (pos != 0 && hasFocus) {
+                    adapter.updateItemPosition(pos, 0);
+                    adapter.notifyItemMoved(pos, 0);
                 }
             }
         };
@@ -130,5 +138,11 @@ public class ConverterFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         converterListInteractionListener = null;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        vmConverter.cleanUp();
     }
 }

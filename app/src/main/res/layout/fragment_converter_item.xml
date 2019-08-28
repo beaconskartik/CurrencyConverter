@@ -15,7 +15,7 @@
         android:padding="12dp">
 
         <ImageView
-            android:id="@+id/icCurrencyFlag"
+            android:id="@+id/currency_flag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@id/currency_name"
@@ -28,7 +28,7 @@
             android:id="@+id/currency_symbol"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/icCurrencyFlag"
+            android:layout_toEndOf="@id/currency_flag"
             android:textAppearance="?attr/textAppearanceListItem"
             android:text="@{vm.mItem.codeName.toUpperCase()}"
             android:textColor="@android:color/black"
@@ -39,7 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/currency_symbol"
-            android:layout_toEndOf="@id/icCurrencyFlag"
+            android:layout_toEndOf="@id/currency_flag"
             android:textAppearance="?attr/textAppearanceListItem"
             android:text="@{ResourceUtils.getCurrencyNameResId(context, vm.mItem.codeName.toLowerCase())}"
             android:textColor="#919294"

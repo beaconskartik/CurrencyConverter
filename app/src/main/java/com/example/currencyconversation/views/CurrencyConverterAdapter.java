@@ -4,7 +4,6 @@ import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.currencyconversation.R;
@@ -16,11 +15,15 @@ import java.util.List;
 
 public class CurrencyConverterAdapter extends RecyclerView.Adapter<CurrencyConverterAdapter.ViewHolder> {
 
-    private final List<CurrencyRate> mValues;
+    private final static String TAG = "CurrencyApp";
+    private final static String LOG_PREFIX = "CurrencyConverterAdapter: ";
+
+    private final List<CurrencyRate> currencyRateList;
     private final IConverterListInteractionListener mListener;
 
-    CurrencyConverterAdapter(IConverterListInteractionListener listener) {
-        mValues = new ArrayList<>();
+    CurrencyConverterAdapter(IConverterListInteractionListener listener, List<CurrencyRate> currencyRateList) {
+        this.currencyRateList = new ArrayList<>();
+        this.currencyRateList.addAll(currencyRateList);
         mListener = listener;
     }
 
@@ -34,41 +37,47 @@ public class CurrencyConverterAdapter extends RecyclerView.Adapter<CurrencyConve
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         holder.fragmentConverterItemBinding.setVm(holder);
-        holder.mItem = mValues.get(position);
+        holder.mItem = currencyRateList.get(position);
 
-        holder.mView.setOnClickListener(view -> {
-                if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    mListener.onListItemClickListener(holder.mItem, holder.getAdapterPosition());
-                }
-        });
+        holder.fragmentConverterItemBinding
+                .getRoot()
+                .setOnClickListener(view -> {
+                    if (mListener != null) {
+                        mListener.onListItemClickListener(holder.mItem, holder.getAdapterPosition());
+                    }
+                });
+
+        holder.fragmentConverterItemBinding
+                .currencyAmount
+                .setOnFocusChangeListener((v, hasFocus) -> {
+                    if (mListener != null) {
+                        mListener.onListItemFocusChangeListener(holder.mItem, holder.getAdapterPosition(), hasFocus);
+                    }
+                });
     }
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        return currencyRateList.size();
     }
 
     void updateList(List<CurrencyRate> currencies) {
-        mValues.clear();
-        mValues.addAll(currencies);
+        currencyRateList.clear();
+        currencyRateList.addAll(currencies);
     }
 
     void updateItemPosition(int from, int to) {
-        CurrencyRate item = mValues.get(from);
-        mValues.remove(from);
-        mValues.add(to, item);
+        CurrencyRate item = currencyRateList.get(from);
+        currencyRateList.add(to, item);
+        currencyRateList.remove(from);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private final View mView;
         private final FragmentConverterItemBinding fragmentConverterItemBinding;
         public CurrencyRate mItem;
 
         ViewHolder(FragmentConverterItemBinding fragmentConverterItemBinding) {
             super(fragmentConverterItemBinding.getRoot());
-            this.mView = fragmentConverterItemBinding.getRoot();
             this.fragmentConverterItemBinding = fragmentConverterItemBinding;
         }
     }

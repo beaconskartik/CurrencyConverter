@@ -71,7 +71,7 @@ public class CurrencyActivity extends AppCompatActivity {
 
     private void replaceFragment(Fragment fragment, @IdRes int resourceId, String tag) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(resourceId, fragment, tag).addToBackStack(tag);
+        fragmentTransaction.replace(resourceId, fragment, tag);
         fragmentTransaction.commit();
     }
 }
