@@ -3,7 +3,7 @@ package com.example.currencyconversation.viewModels;
 public class VmLocator {
 
     private static VmLocator vmLocator;
-    private VmCurrencyConverter vmCurrencyConverter;
+    private VmConverter vmConverter;
 
     public static VmLocator getInstance() {
         if (vmLocator != null) {
@@ -19,10 +19,10 @@ public class VmLocator {
 
     private VmLocator() { }
 
-    public VmCurrencyConverter getVmCurrencyConverter() {
-        if (vmCurrencyConverter == null) {
-            vmCurrencyConverter = new VmCurrencyConverter();
+    public VmConverter getVmConverter() {
+        if (vmConverter == null) {
+            vmConverter = new VmConverter();
         }
-        return vmCurrencyConverter;
+        return vmConverter;
     }
 }

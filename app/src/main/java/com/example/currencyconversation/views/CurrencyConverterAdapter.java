@@ -12,7 +12,7 @@ import android.widget.TextView;
 import com.example.currencyconnector.models.Currency;
 import com.example.currencyconversation.R;
 import com.example.currencyconversation.utils.ResourceUtils;
-import com.example.currencyconversation.views.CurrencyConverterFragment.OnListFragmentInteractionListener;
+import com.example.currencyconversation.views.ConverterFragment.OnListFragmentInteractionListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +71,6 @@ public class CurrencyConverterAdapter extends RecyclerView.Adapter<CurrencyConve
     public void updateList(List<Currency> currencies) {
         mValues.clear();
         mValues.addAll(currencies);
-        notifyDataSetChanged();
     }
 
     public void updateItemPosition(int from, int to) {

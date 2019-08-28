@@ -31,6 +31,7 @@ public class RateList {
 
     public List<Currency> getRates() {
         List<Currency> currencyList = new ArrayList<>();
+        currencyList.add(new Currency(base, 1.00));
         for (Map.Entry<String, Double> rate : rates.entrySet()) {
             currencyList.add(new Currency(rate.getKey(), rate.getValue()));
         }
