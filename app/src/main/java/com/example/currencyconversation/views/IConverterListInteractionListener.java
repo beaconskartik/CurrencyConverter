@@ -7,4 +7,6 @@ public interface IConverterListInteractionListener {
     void onListItemClickListener(CurrencyRate item, int pos);
 
     void onListItemFocusChangeListener(CurrencyRate item, int pos, boolean hasFocus);
+
+    void onListItemEditTextChangeListener(CurrencyRate item, int pos, double changedAmount);
 }

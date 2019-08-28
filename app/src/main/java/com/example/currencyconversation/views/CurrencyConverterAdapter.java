@@ -13,6 +13,8 @@ import com.example.currencyconversation.models.CurrencyRate;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.disposables.CompositeDisposable;
+
 public class CurrencyConverterAdapter extends RecyclerView.Adapter<CurrencyConverterAdapter.ViewHolder> {
 
     private final static String TAG = "CurrencyApp";
@@ -57,6 +59,12 @@ public class CurrencyConverterAdapter extends RecyclerView.Adapter<CurrencyConve
     }
 
     @Override
+    public void onViewRecycled(@NonNull ViewHolder holder) {
+        super.onViewRecycled(holder);
+        holder.compositeDisposable.clear();
+    }
+
+    @Override
     public int getItemCount() {
         return currencyRateList.size();
     }
@@ -68,17 +76,19 @@ public class CurrencyConverterAdapter extends RecyclerView.Adapter<CurrencyConve
 
     void updateItemPosition(int from, int to) {
         CurrencyRate item = currencyRateList.get(from);
-        currencyRateList.add(to, item);
         currencyRateList.remove(from);
+        currencyRateList.add(to, item);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         private final FragmentConverterItemBinding fragmentConverterItemBinding;
+        private final CompositeDisposable compositeDisposable;
         public CurrencyRate mItem;
 
         ViewHolder(FragmentConverterItemBinding fragmentConverterItemBinding) {
             super(fragmentConverterItemBinding.getRoot());
             this.fragmentConverterItemBinding = fragmentConverterItemBinding;
+            this.compositeDisposable = new CompositeDisposable();
         }
     }
 }

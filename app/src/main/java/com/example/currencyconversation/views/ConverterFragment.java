@@ -116,8 +116,8 @@ public class ConverterFragment extends Fragment {
             public void onListItemClickListener(CurrencyRate item, int pos) {
                 Log.d(TAG, LOG_PREFIX + "onListItemClickListener: item: " + item.codeName + " pos: " + pos);
                 if (pos != 0) {
-                    adapter.updateItemPosition(pos, 0);
                     adapter.notifyItemMoved(pos, 0);
+                    adapter.updateItemPosition(pos, 0);
                     recyclerView.scrollToPosition(0);
                 }
             }
@@ -125,11 +125,18 @@ public class ConverterFragment extends Fragment {
             @Override
             public void onListItemFocusChangeListener(CurrencyRate item, int pos, boolean hasFocus) {
                 Log.d(TAG, LOG_PREFIX + "onListItemFocusChangeListener: item: " + item.codeName + " pos: " + pos);
-                vmConverter.canStartRefreshingCurrencyValue(!hasFocus);
+                vmConverter.canStartRefreshingCurrencyValue(item, !hasFocus);
                 if (pos != 0 && hasFocus) {
-                    adapter.updateItemPosition(pos, 0);
                     adapter.notifyItemMoved(pos, 0);
+                    adapter.updateItemPosition(pos, 0);
                 }
+            }
+
+            @Override
+            public void onListItemEditTextChangeListener(CurrencyRate item, int pos, double changedAmount) {
+                Log.d(TAG, LOG_PREFIX + "onListItemEditTextChangeListener: item: " + item.codeName
+                        + " pos: " + pos + " changedAmount: " + changedAmount);
+                vmConverter.updateChangedAmount(item, changedAmount);
             }
         };
     }
