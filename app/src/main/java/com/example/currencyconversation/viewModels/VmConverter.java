@@ -31,8 +31,8 @@ public class VmConverter {
 
     private final static String TAG = "CurrencyApp";
     private final static String LOG_PREFIX = "VmConverter: ";
+    private final static int REFRESH_CURRENCY_TIME = 1;
 
-    private final int REFRESH_CURRENCY_TIME = 1;
     private final CurrencyConnector currencyConnector;
 
     private final String baseCurrencyCode = "EUR";
@@ -113,7 +113,7 @@ public class VmConverter {
 //                double val = (integerCurrencyPair.second.getValue()/currencyRateDoublePair.first.value.get()) * currencyRateDoublePair.second;
 //                return Pair.create(integerCurrencyPair.first, val);
 //            })
-                    compositeDisposable.add(currencyUpdateObservable
+            compositeDisposable.add(currencyUpdateObservable
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnNext(currencyPair -> {
                         currencyObservableList.get(currencyPair.first).value.set(currencyPair.second.getValue());

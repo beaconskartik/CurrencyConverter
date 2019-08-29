@@ -9,10 +9,15 @@ import android.view.ViewGroup;
 import com.example.currencyconversation.R;
 import com.example.currencyconversation.databinding.FragmentConverterItemBinding;
 import com.example.currencyconversation.models.CurrencyRate;
+import com.example.currencyconversation.utils.LogSubscriberImpl;
+import com.jakewharton.rxbinding2.view.RxView;
+import com.jakewharton.rxbinding2.widget.RxTextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 
 public class CurrencyConverterAdapter extends RecyclerView.Adapter<CurrencyConverterAdapter.ViewHolder> {
@@ -41,21 +46,49 @@ public class CurrencyConverterAdapter extends RecyclerView.Adapter<CurrencyConve
         holder.fragmentConverterItemBinding.setVm(holder);
         holder.mItem = currencyRateList.get(position);
 
-        holder.fragmentConverterItemBinding
-                .getRoot()
-                .setOnClickListener(view -> {
+        // OnClick Listener
+        holder.compositeDisposable.add(RxView.clicks(holder.fragmentConverterItemBinding.getRoot())
+                .doOnNext(val -> {
                     if (mListener != null) {
                         mListener.onListItemClickListener(holder.mItem, holder.getAdapterPosition());
                     }
-                });
+                })
+                .subscribeWith(new LogSubscriberImpl<>(TAG, LOG_PREFIX + "onListItemClickListener", false)));
 
-        holder.fragmentConverterItemBinding
-                .currencyAmount
-                .setOnFocusChangeListener((v, hasFocus) -> {
+        // Edit Text Change listener
+        Observable<Double> changedValueObservable =
+                RxTextView.textChanges(holder.fragmentConverterItemBinding.currencyAmount)
+                        .skipInitialValue()
+                        .debounce(200, TimeUnit.MILLISECONDS)
+                        .filter(val -> val.length() > 0 || (val.length() == 1 && val.charAt(0) != '.'))
+                        .map(CharSequence::toString)
+                        .map(Double::valueOf)
+                        .distinctUntilChanged()
+                        .doOnNext(value -> {
+                            if (mListener != null) {
+                                mListener.onListItemEditTextChangeListener(holder.mItem, holder.getAdapterPosition(), value);
+                            }
+                        });
+
+        // Focus change listener
+        CompositeDisposable compositeDisposable = new CompositeDisposable();
+        holder.compositeDisposable.add(RxView.focusChanges(holder.fragmentConverterItemBinding.currencyAmount)
+                .skipInitialValue()
+                .doOnNext(hasFocus -> {
                     if (mListener != null) {
                         mListener.onListItemFocusChangeListener(holder.mItem, holder.getAdapterPosition(), hasFocus);
                     }
-                });
+                })
+                .doOnNext(hasFocus -> {
+                    if (hasFocus) {
+                        compositeDisposable.add(changedValueObservable
+                                .subscribeWith(new LogSubscriberImpl<>(TAG, LOG_PREFIX
+                                        + "onListItemEditTextChangeListener", false)));
+                    } else {
+                        compositeDisposable.clear();
+                    }
+                })
+                .subscribeWith(new LogSubscriberImpl<>(TAG,LOG_PREFIX + "onListItemFocusChangeListener", false)));
     }
 
     @Override
