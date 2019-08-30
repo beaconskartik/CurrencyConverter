@@ -22,7 +22,7 @@ import com.example.currencyconversation.viewModels.VmLocator;
 public class ConverterFragment extends Fragment {
 
     private final static String TAG = "CurrencyApp";
-    private final static String LOG_PREFIX = "ConverterFragment: ";
+    private final static String LOG_PREFIX = "ConverterFragment:";
 
     private IConverterListInteractionListener converterListInteractionListener;
     private RecyclerView recyclerView;
@@ -115,17 +115,14 @@ public class ConverterFragment extends Fragment {
             @Override
             public void onListItemClickListener(CurrencyRate item, int pos) {
                 Log.d(TAG, LOG_PREFIX + "onListItemClickListener: item: " + item.codeName + " pos: " + pos);
-                if (pos != 0) {
-                    adapter.notifyItemMoved(pos, 0);
-                    adapter.updateItemPosition(pos, 0);
-                    recyclerView.scrollToPosition(0);
-                }
             }
 
             @Override
             public void onListItemFocusChangeListener(CurrencyRate item, int pos, boolean hasFocus) {
-                Log.d(TAG, LOG_PREFIX + "onListItemFocusChangeListener: item: " + item.codeName + " pos: " + pos);
-                vmConverter.canStartRefreshingCurrencyValue(item, !hasFocus);
+                Log.d(TAG, LOG_PREFIX + "onListItemFocusChangeListener: item: " + item.codeName
+                        + " pos: " + pos + " hasFocus: " + hasFocus + " val->" + item.value.get());
+                if (hasFocus) vmConverter.updateBaseOrChangedAmount(item.codeName, item.value.get());
+                else vmConverter.updateBaseAmount(item.codeName);
                 if (pos != 0 && hasFocus) {
                     adapter.notifyItemMoved(pos, 0);
                     adapter.updateItemPosition(pos, 0);
@@ -136,7 +133,8 @@ public class ConverterFragment extends Fragment {
             public void onListItemEditTextChangeListener(CurrencyRate item, int pos, double changedAmount) {
                 Log.d(TAG, LOG_PREFIX + "onListItemEditTextChangeListener: item: " + item.codeName
                         + " pos: " + pos + " changedAmount: " + changedAmount);
-                vmConverter.updateChangedAmount(item, changedAmount);
+                // adapter.updateItemValue(pos, changedAmount);
+                vmConverter.updateBaseOrChangedAmount(item.codeName, changedAmount);
             }
         };
     }

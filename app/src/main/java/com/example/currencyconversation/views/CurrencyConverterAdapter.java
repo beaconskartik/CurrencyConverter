@@ -15,6 +15,7 @@ import com.jakewharton.rxbinding2.widget.RxTextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
@@ -25,7 +26,7 @@ public class CurrencyConverterAdapter extends RecyclerView.Adapter<CurrencyConve
     private final static String TAG = "CurrencyApp";
     private final static String LOG_PREFIX = "CurrencyConverterAdapter: ";
 
-    private final List<CurrencyRate> currencyRateList;
+    private List<CurrencyRate> currencyRateList;
     private final IConverterListInteractionListener mListener;
 
     CurrencyConverterAdapter(IConverterListInteractionListener listener, List<CurrencyRate> currencyRateList) {
@@ -111,6 +112,11 @@ public class CurrencyConverterAdapter extends RecyclerView.Adapter<CurrencyConve
         CurrencyRate item = currencyRateList.get(from);
         currencyRateList.remove(from);
         currencyRateList.add(to, item);
+    }
+
+    void updateItemValue(int pos, double val) {
+       currencyRateList.get(pos).value.set(val);
+       currencyRateList.get(pos).currencyValue.set(String.format(Locale.getDefault(), "%.3f", val));
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
